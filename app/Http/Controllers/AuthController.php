@@ -51,10 +51,21 @@ class AuthController extends Controller
                 'phone_number' => $validatedData['phone_number'],
             ]);
 
+            // log in the user after registration
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'access_token' => $token,
             ], 201);
+    }
+
+    // the user model will need to be extended for this
+    public function getUsers() {
+        try {
+            $users = User::all();
+            return response()->json($users, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e], 500);
         }
+    }
 }

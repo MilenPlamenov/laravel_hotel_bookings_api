@@ -8,11 +8,6 @@ use \App\Models\Room;
 class RoomController extends Controller
 {
 
-    public function __invoke()
-    {
-        return ['user' => auth()->user()];
-    }
-
     /**
      * Get list of all rooms.
      *
