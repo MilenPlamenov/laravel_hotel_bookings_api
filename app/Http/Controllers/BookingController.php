@@ -101,6 +101,17 @@ class BookingController extends Controller
 
     /**
      * Display the specified resource.
+     *
+     * @api v1
+     * @method GET
+     * @uri http://localhost/api/bookings/{booking_id}
+     *
+     *
+     * @param int|required booking_id - The id of the booking
+     *
+     * @return 200
+     * @return 404
+     * @return 500
      */
     public function show(Booking $booking)
     {
@@ -122,12 +133,26 @@ class BookingController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update a specified booking.
+     *
+     * @api v1
+     * @method PUT
+     * @uri http://localhost/api/bookings/
+     *
+     *
+     * @param int|optional room_id - The id of the room
+     * @param int|optional user_id - The id of the user
+     * @param string|optional check_in_date - The check in date
+     * @param string|optional check_out_date - The check out date
+     * @param float|optional total_price - The total price of the booking
+     *
+     * @return 200
+     * @return 422
+     * @return 500
      */
     public function update(Request $request, Booking $booking)
     {
         try {
-
 
             $booking->update($request->all());
             return response()->json($booking, 200);
@@ -140,6 +165,16 @@ class BookingController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @api v1
+     * @method DELETE
+     * @uri http://localhost/api/bookings/{booking_id}
+     *
+     *
+     * @param int|required booking_id - The id of the booking
+     *
+     * @return 204
+     * @return 500
      */
      public function destroy(Booking $booking)
      {
