@@ -82,7 +82,6 @@ class BookingController extends Controller
     }
 
 
-
     private function isRoomAvailable($roomId, $checkInDate, $checkOutDate)
     {
         $existingBookings = Booking::where('room_id', $roomId)
@@ -100,13 +99,17 @@ class BookingController extends Controller
     }
 
 
-
     /**
      * Display the specified resource.
      */
     public function show(Booking $booking)
     {
-        return $booking->load('room', 'user');
+        try {
+            $booking = $booking->load('room', 'user');
+            return response()->json($booking, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching booking details', 'message' => $e->getMessage()], 500);
+        }
 
     }
 
@@ -123,8 +126,16 @@ class BookingController extends Controller
      */
     public function update(Request $request, Booking $booking)
     {
-        $booking->update($request->all());
-        return response()->json($booking, 200);
+        try {
+
+
+            $booking->update($request->all());
+            return response()->json($booking, 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['error' => 'Validation error', 'message' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error updating booking', 'message' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -132,7 +143,11 @@ class BookingController extends Controller
      */
      public function destroy(Booking $booking)
      {
-         $booking->delete();
-         return response()->json(null, 204);
+        try {
+            $booking->delete();
+            return response()->json('Booking deleted!', 204);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error deleting booking!', 'message' => $e->getMessage()], 500);
+        }
      }
 }

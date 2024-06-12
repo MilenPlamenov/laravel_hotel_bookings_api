@@ -12,7 +12,12 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        return Payment::with('booking')->get();
+        try {
+            $payments = Payment::with('booking')->get();
+            return response()->json($payments, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching payments', 'message' => $e->getMessage()], 500);
+        }
 
     }
 
@@ -64,7 +69,12 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        return $payment->load('booking');
+        try {
+            $payment = $payment->load('booking');
+            return response()->json($payment, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching payment details', 'message' => $e->getMessage()], 500);
+        }
 
     }
 
@@ -81,16 +91,32 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Payment $payment)
     {
-        $payment->update($request->all());
-        return response()->json($payment, 200);
+        try {
+            $validatedData = $request->validate([
+                'amount' => 'sometimes|required|numeric',
+                'payment_date' => 'sometimes|required|date',
+                'status' => 'sometimes|required|in:pending,completed,failed',
+            ]);
+
+            $payment->update($validatedData);
+            return response()->json($payment, 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['error' => 'Validation error', 'message' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error updating payment', 'message' => $e->getMessage()], 500);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified payment from storage.
      */
     public function destroy(Payment $payment)
     {
-        $payment->delete();
-        return response()->json(null, 204);
+        try {
+            $payment->delete();
+            return response()->json('Payment deleted!', 204);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error deleting payment', 'message' => $e->getMessage()], 500);
+        }
     }
 }
