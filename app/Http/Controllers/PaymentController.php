@@ -54,13 +54,14 @@ class PaymentController extends Controller
             'status' => 'required|in:pending,completed,failed,Pending,Completed,Failed'
         ]);
 
+        // more validations will be needed
         try {
             $payment = Payment::create($validatedData);
             return response()->json($payment, 201);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['error' => 'Database error occurred while creating payment'], 500);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
