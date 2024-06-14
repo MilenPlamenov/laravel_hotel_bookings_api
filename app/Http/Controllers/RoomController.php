@@ -158,6 +158,7 @@ class RoomController extends Controller
      * @param int|required room_id - The id of the room
      *
      * @return 204
+     * @return 404
      * @return 500
      */
     public function destroy(Room $room)
@@ -165,9 +166,11 @@ class RoomController extends Controller
 
         try {
             $room->delete();
-            return response()->json('Room deleted successfully', 204);
+            return response()->json('Room deleted', 204);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Room not found'], 404);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Error deleting the room', 'message' => $e->getMessage()], 500);
         }
 
     }

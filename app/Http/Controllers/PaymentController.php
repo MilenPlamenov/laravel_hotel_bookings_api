@@ -66,13 +66,26 @@ class PaymentController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified payment.
+     *
+     * @api v1
+     * @method GET
+     * @uri http://localhost/api/payments/{payment_id}
+     *
+     *
+     * @param int|required payment_id - The id of the payment
+     *
+     * @return 200
+     * @return 404
+     * @return 500
      */
     public function show(Payment $payment)
     {
         try {
             $payment = $payment->load('booking');
             return response()->json($payment, 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Payment not found'], 404);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching payment details', 'message' => $e->getMessage()], 500);
         }
@@ -110,14 +123,27 @@ class PaymentController extends Controller
 
     /**
      * Remove the specified payment from storage.
+     *
+     * @api v1
+     * @method DELETE
+     * @uri http://localhost/api/payments/{payment_id}
+     *
+     *
+     * @param int|required payment_id - The id of the payment
+     *
+     * @return 204
+     * @return 404
+     * @return 500
      */
     public function destroy(Payment $payment)
     {
         try {
             $payment->delete();
             return response()->json('Payment deleted!', 204);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Payment not found'], 404);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error deleting payment', 'message' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Error deleting the payment', 'message' => $e->getMessage()], 500);
         }
     }
 }

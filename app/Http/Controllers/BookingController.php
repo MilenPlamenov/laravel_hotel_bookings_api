@@ -118,6 +118,8 @@ class BookingController extends Controller
         try {
             $booking = $booking->load('room', 'user');
             return response()->json($booking, 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Booking not found'], 404);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching booking details', 'message' => $e->getMessage()], 500);
         }
@@ -174,6 +176,7 @@ class BookingController extends Controller
      * @param int|required booking_id - The id of the booking
      *
      * @return 204
+     * @return 404
      * @return 500
      */
      public function destroy(Booking $booking)
@@ -181,8 +184,10 @@ class BookingController extends Controller
         try {
             $booking->delete();
             return response()->json('Booking deleted!', 204);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Booking not found'], 404);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error deleting booking!', 'message' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Error deleting the booking', 'message' => $e->getMessage()], 500);
         }
      }
 }
