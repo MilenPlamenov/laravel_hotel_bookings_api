@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\Models\Booking;
+use App\Events\BookingCreated;
 
 
 class BookingController extends Controller
@@ -73,6 +74,9 @@ class BookingController extends Controller
             }
 
             $booking = Booking::create($validatedData);
+
+            event(new BookingCreated($booking));
+
             return response()->json($booking, 201);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['error' => 'Database error occurred while creating booking'], 500);
